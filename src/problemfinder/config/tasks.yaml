@@ -1,0 +1,25 @@
+problem_finder_task:
+  description: >
+    Identify all discrepancies and inconsistencies in the information extracted from the documents and chat history, provide a list of the problems.
+
+    ** Chat History **
+    {chat}
+
+    ** Documents **
+    {documents}
+
+    Here documents is the json array of the objects with the following keys:
+    - name: The name of the document.
+    - type: The type of the document.
+    - url: The url of the document.
+
+    Your task is to:
+    1. Identify all discrepancies and inconsistencies in the chat history.
+       User may have provided wrong information in the chat history. So you need to suspect every user's answer and check if it makes sense.
+    2. Access each document in the documents array by its url and extract the information from the document. Show us what you have extracted from the document.
+       The url might have token in it. Don't remove the token.
+    3. Find out all discrepancies and inconsistencies in the information of chat history and the information extracted from the documents.
+    4. Provide a list of the problems.
+    
+  agent: problem_finder
+
