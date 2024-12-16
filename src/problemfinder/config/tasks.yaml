@@ -1,25 +1,155 @@
-problem_finder_task:
+info_extractor_task:
   description: >
-    Identify all discrepancies and inconsistencies in the information extracted from the documents and chat history, provide a list of the problems.
+    Parse each file and extract all information on it in the {documents} which follows the next format:
+    [        
+      "File1 URL",
+      "File2 URL",
+      ...
+    ]
 
-    ** Chat History **
-    {chat}
+    Follow these steps:
+    1. READ THE DOCUMENT CAREFULLY
+    - Access the file from the url provided. 
+      The url can contain a token to access the file, so don't remove it.
+    - Thoroughly examine all sections of the file
 
-    ** Documents **
-    {documents}
+    2. EXTRACT AND ORGANIZE INFORMATION
+    - Extract all factual statements
+    - Identify key dates, numbers, and personal information
 
-    Here documents is the json array of the objects with the following keys:
-    - name: The name of the document.
-    - type: The type of the document.
-    - url: The url of the document.
+    3. QUALITY CHECK
+    - Verify that no important details have been missed
+    - Ensure accuracy in all extracted information
 
-    Your task is to:
-    1. Identify all discrepancies and inconsistencies in the chat history.
-       User may have provided wrong information in the chat history. So you need to suspect every user's answer and check if it makes sense.
-    2. Access each document in the documents array by its url and extract the information from the document. Show us what you have extracted from the document.
-       The url might have token in it. Don't remove the token.
-    3. Find out all discrepancies and inconsistencies in the information of chat history and the information extracted from the documents.
-    4. Provide a list of the problems.
-    
-  agent: problem_finder
+    IMPORTANT:
+    - Extract ALL information, even if it seems minor
+    - Maintain absolute accuracy in your extraction
+    - Present information in an organized, easy-to-reference format
+    - Do not make assumptions or inferences beyond the document content
+    - Only include the extracted information, not the information of the document itself
+  async_execution: True
+  expected_output: >
+    A JSON object with the following example structure:
+    {{
+        "Document name": {{
+            "Inf1": "Value1",
+            "Inf2": "Value2",
+            "Inf3": "Value3",
+            ...
+        }}
+    }}
+  agent: info_extractor
 
+chat_problem_finder_task:
+  description: >
+    Analyze {chat} between the client and the legal assistant in the following format and identify all inconsistencies and discrepancies.
+    [
+        {{
+            "role": "user" | "assistant",
+            "content": "Chat content"
+        }}
+    ]
+
+    Follow these steps:
+    1. ANALYZE CHAT CONTENT
+    - Read through the entire chat log
+    - Pay special attention to:
+      * Numerical values
+      * Personal details
+
+    2. IDENTIFY INCONSISTENCIES
+    - Look for contradictions within the user's answers
+    - Note any logical impossibilities
+    - Flag any statements that doesn't make sense or conflict with established facts
+
+    3. DOCUMENT FINDINGS
+    - For each inconsistency found:
+      * Explain the nature of the discrepancy in a concise and clear manner
+
+    4. QUALITY ASSESSMENT
+    - Review all findings for accuracy
+    - Ensure each reported discrepancy is well-documented
+
+    IMPORTANT:
+    - Maintain complete objectivity
+    - Do not make assumptions
+    - Include both major and minor discrepancies
+  async_execution: True
+  expected_output: >
+    An array of strings with the following example structure:
+    [
+        "Inconsistency 1",
+        "Inconsistency 2",
+        "Inconsistency 3"
+    ]
+  agent: chat_problem_finder
+
+comparator_task:
+  description: >
+    Compare information from {chat} between the client and the legal assistant against extracted document information and identify all discrepancies. 
+
+    Follow these steps:
+    1. PREPARE COMPARISON FRAMEWORK
+    - Review the extracted document information thoroughly
+    - Organize key points from both sources into comparable categories:
+      * Facts and figures
+      * Dates and times
+
+    2. CONDUCT SYSTEMATIC COMPARISON
+    - Cross-reference each statement from the chat log with document information
+    - Check for:
+      * Direct contradictions
+      * Partial mismatches
+
+    3. DOCUMENT DISCREPANCIES
+    - For each discrepancy found:
+      * Explain the exact nature of the mismatch
+
+    4. VERIFICATION
+    - Double-check all identified discrepancies
+    - Ensure all comparisons are based on facts, not interpretations
+    - Review for any missed comparisons
+
+    IMPORTANT:
+    - Maintain strict objectivity
+    - Focus on factual comparisons
+    - Report all discrepancies regardless of size
+  context: [info_extractor_task]
+  expected_output: >
+    An array of strings with the following example structure:
+    [
+        "Inconsistency 1",
+        "Inconsistency 2",
+        "Inconsistency 3"
+    ]
+  agent: comparator
+
+reviewer_task:
+  description: >
+    Review and summarize all identified problems and discrepancies. Follow these steps:
+
+    1. ANALYZE ALL FINDINGS
+    - Review all discrepancies identified by previous agents
+
+    2. ORGANIZE INFORMATION
+    - Remove duplicates
+
+    3. CREATE EXECUTIVE SUMMARY
+    - Provide a concise, simple yet clear list of key findings
+    - Provide one line per discrepancy
+
+    IMPORTANT:
+    - Focus on clarity and actionability
+    - Maintain objectivity in assessment
+    - Ensure all critical issues are highlighted
+    - Preserve important context while being concise
+  context: [comparator_task, chat_problem_finder_task]
+  expected_output: >
+    An array of strings with the following example structure:
+    [
+        "Date of Birth Discrepancy: Provided date of birth is 02/05/2000, but the Permanent Resident Card shows 01/01/1920.",
+        "Inconsistency 2: blah blah",
+        "Inconsistency 3: blah blah"
+    ]
+  agent: reviewer
+  output_file: "report.txt"

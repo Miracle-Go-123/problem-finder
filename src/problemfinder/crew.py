@@ -36,17 +36,57 @@ class ProblemFinder():
 		return modified_inputs
 	
 	@agent
-	def problem_finder(self) -> Agent:
+	def info_extractor(self) -> Agent:
 		return Agent(
-			config=self.agents_config['problem_finder'],
+			config=self.agents_config['info_extractor'],
 			verbose=True,
-			memory=True,
+		)
+	
+	@agent
+	def chat_problem_finder(self) -> Agent:
+		return Agent(
+			config=self.agents_config['chat_problem_finder'],
+			verbose=True,
+		)
+	
+	@agent
+	def comparator(self) -> Agent:
+		return Agent(
+			config=self.agents_config['comparator'],
+			verbose=True,
+		)
+	
+	@agent
+	def reviewer(self) -> Agent:
+		return Agent(
+			config=self.agents_config['reviewer'],
+			verbose=True,
 		)
 	
 	@task
-	def problem_finder_task(self) -> Task:
-		config=self.tasks_config['problem_finder_task']
-		# config['output_json'] = outputPydantic
+	def info_extractor_task(self) -> Task:
+		config=self.tasks_config['info_extractor_task']
+		return Task(
+			config=config,
+		)
+	
+	@task
+	def chat_problem_finder_task(self) -> Task:
+		config=self.tasks_config['chat_problem_finder_task']
+		return Task(
+			config=config,
+		)
+	
+	@task
+	def comparator_task(self) -> Task:
+		config=self.tasks_config['comparator_task']
+		return Task(
+			config=config,
+		)
+	
+	@task
+	def reviewer_task(self) -> Task:
+		config=self.tasks_config['reviewer_task']
 		config['expected_output'] = "list"
 		return Task(
 			config=config,
