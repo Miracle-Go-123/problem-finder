@@ -22,6 +22,7 @@ info_extractor_task:
     - Ensure accuracy in all extracted information
 
     IMPORTANT:
+    - Figure out the document tupe, is it a drivers license? a permanent resident card? a passport? etc...
     - Extract ALL information, even if it seems minor
     - Maintain absolute accuracy in your extraction
     - Present information in an organized, easy-to-reference format
@@ -31,7 +32,7 @@ info_extractor_task:
   expected_output: >
     A JSON object with the following example structure:
     {{
-        "Document name": {{
+        "Document type": {{
             "Inf1": "Value1",
             "Inf2": "Value2",
             "Inf3": "Value3",
