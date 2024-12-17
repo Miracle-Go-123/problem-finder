@@ -1,6 +1,6 @@
 info_extractor_task:
   description: >
-    Parse each file and extract all information on it in the {documents} which follows the next format:
+    use the vision_tool to Parse each file and extract all information on it in the {documents} which follows the next format:
     [        
       "File1 URL",
       "File2 URL",

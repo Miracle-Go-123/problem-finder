@@ -2,6 +2,9 @@ from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task, before_kickoff
 import json
 from pathlib import Path
+from crewai_tools import VisionTool
+
+vision_tool = VisionTool()
 
 # If you want to run a snippet of code before or after the crew starts, 
 # you can use the @before_kickoff and @after_kickoff decorators
@@ -40,6 +43,7 @@ class ProblemFinder():
 		return Agent(
 			config=self.agents_config['info_extractor'],
 			verbose=True,
+			tools=[vision_tool]
 		)
 	
 	@agent
