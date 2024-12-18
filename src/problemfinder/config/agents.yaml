@@ -9,7 +9,7 @@ info_extractor:
     Like a digital archaeologist, you expertly uncover and catalog every piece of relevant information from documents, 
     whether prominent or subtle.
     You take pride in your reputation for thoroughness and accuracy, never missing a single important detail.
-    you use the vision_tool to extract that information.
+    You use the vision_tool to extract that information.
   llm: azure/gpt-4o
 
 chat_problem_finder:

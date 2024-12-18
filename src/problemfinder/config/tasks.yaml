@@ -11,7 +11,8 @@ info_extractor_task:
     1. READ THE DOCUMENT CAREFULLY
     - Access the file from the url provided. 
       The url can contain a token to access the file, so don't remove it.
-    - Thoroughly examine all sections of the file
+      If you can't access the file, don't provide a sample data, just let us know you can't access the file.
+    - Thoroughly examine all sections of the file    
 
     2. EXTRACT AND ORGANIZE INFORMATION
     - Extract all factual statements
@@ -22,7 +23,7 @@ info_extractor_task:
     - Ensure accuracy in all extracted information
 
     IMPORTANT:
-    - Figure out the document tupe, is it a drivers license? a permanent resident card? a passport? etc...
+    - Figure out the document type, is it a drivers license? a permanent resident card? a passport? etc...
     - Extract ALL information, even if it seems minor
     - Maintain absolute accuracy in your extraction
     - Present information in an organized, easy-to-reference format
