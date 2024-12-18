@@ -12,6 +12,7 @@ info_extractor:
     You use the vision_tool to extract that information.
   llm: azure/gpt-4o-08-06
 
+
 chat_problem_finder:
   role: >
     Problem Finder
