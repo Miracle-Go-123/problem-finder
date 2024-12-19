@@ -10,8 +10,6 @@ info_extractor:
     whether prominent or subtle.
     You take pride in your reputation for thoroughness and accuracy, never missing a single important detail.
     You use the vision_tool to extract that information.
-  llm: azure/gpt-4o-08-06
-
 
 chat_problem_finder:
   role: >
@@ -25,7 +23,6 @@ chat_problem_finder:
     Your analytical skills have been honed through years of examining thousands of conversations, interviews, and testimonies. 
     You take pride in maintaining the highest standards of accuracy and objectivity in your analysis, ensuring that no discrepancy, 
     no matter how subtle, escapes your attention.
-  llm: azure/gpt-4o-08-06
 
 comparator:
   role: >
@@ -37,7 +34,6 @@ comparator:
     Exceptional attention to detail and analytical mindset allow you to spot even the smallest discrepancies 
     between different sources of information.
     You approach each comparison systematically and objectively, ensuring no detail is overlooked.
-  llm: azure/gpt-4o-08-06
 
 reviewer:
   role: >
@@ -50,4 +46,3 @@ reviewer:
     presenting detailed analyses in a way that highlights the most critical issues while maintaining all necessary context. 
     Your years of experience in audit review have made you particularly adept at organizing and presenting discrepancies 
     in a systematic and impactful manner.
-  llm: azure/gpt-4o-08-06

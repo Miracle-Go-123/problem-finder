@@ -1,8 +1,6 @@
-import base64
 from typing import Type
 import os
 
-import requests
 from openai import AzureOpenAI
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv

@@ -4,6 +4,13 @@ import json
 from pathlib import Path
 
 from problemfinder.tools.customized_vision_tool import CustomizedVisionTool
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+deployment_name = os.getenv("AZURE_OPENAI_DEPLOYMENT")
+llm = f"azure/{deployment_name}"
 
 vision_tool = CustomizedVisionTool()
 
@@ -44,7 +51,8 @@ class ProblemFinder():
 		return Agent(
 			config=self.agents_config['info_extractor'],
 			verbose=True,
-			tools=[vision_tool]
+			tools=[vision_tool],
+			llm=llm
 		)
 	
 	@agent
@@ -52,6 +60,7 @@ class ProblemFinder():
 		return Agent(
 			config=self.agents_config['chat_problem_finder'],
 			verbose=True,
+			llm=llm
 		)
 	
 	@agent
@@ -59,6 +68,7 @@ class ProblemFinder():
 		return Agent(
 			config=self.agents_config['comparator'],
 			verbose=True,
+			llm=llm
 		)
 	
 	@agent
@@ -66,6 +76,7 @@ class ProblemFinder():
 		return Agent(
 			config=self.agents_config['reviewer'],
 			verbose=True,
+			llm=llm
 		)
 	
 	@task
