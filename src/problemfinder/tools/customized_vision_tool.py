@@ -24,7 +24,7 @@ class CustomizedVisionTool(BaseTool):
 
     def _run_web_hosted_images(self, client, image_path_url: str) -> str:
         response = client.chat.completions.create(
-            model="gpt-4o",
+            model=client.model,
             messages=[
                 {
                     "role": "user",
@@ -52,7 +52,7 @@ class CustomizedVisionTool(BaseTool):
         }
 
         payload = {
-            "model": "gpt-4o",
+            "model": client.model,
             "messages": [
                 {
                     "role": "user",
@@ -70,7 +70,7 @@ class CustomizedVisionTool(BaseTool):
             "max_tokens": 300,
         }
 
-        azure_endpoint = f"{client.base_url}/openai/deployments/gpt-4o/chat/completions?api-version={client.api_version}"
+        azure_endpoint = f"{client.base_url}/openai/deployments/{client.model}/chat/completions?api-version={client.api_version}"
         response = requests.post(azure_endpoint, headers=headers, json=payload)
 
         return response.json()["choices"][0]["message"]["content"]
@@ -80,6 +80,7 @@ class CustomizedVisionTool(BaseTool):
             base_url=os.environ["AZURE_API_BASE"],
             api_key=os.environ["AZURE_API_KEY"],
             api_version=os.environ["AZURE_API_VERSION"],
+            model=os.environ["AZURE_MODEL"] or "gpt-4o",
         )
 
         image_path_url = kwargs.get("image_path_url")
