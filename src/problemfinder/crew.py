@@ -2,6 +2,7 @@ from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task, before_kickoff
 import json
 from pathlib import Path
+from typing import List, Dict, Any
 
 from problemfinder.tools.customized_vision_tool import CustomizedVisionTool
 
@@ -13,31 +14,27 @@ vision_tool = CustomizedVisionTool()
 
 @CrewBase
 class ProblemFinder():
-	"""ProblemFinder crew"""
+	"""ProblemFinder crew that analyzes documents and chat for problems"""
 
 	agents_config = 'config/agents.yaml'
 	tasks_config = 'config/tasks.yaml'
 
 	@before_kickoff
-	def prepare_data(self, inputs):
+	def prepare_data(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
 		"""
-		Prepare chat log and uploaded documents data for the problem finder
+		Prepare input data for the problem finder.
+		Expected inputs:
+		- documents: List[str] - List of document URLs
+		- chat: List[Dict] - Chat history in JSON format
 		"""
-		chat_path = Path("assets") / "chat.json"
-		docs_path = Path("assets") / "document.json"
-		
-		with open(chat_path, "r") as file:    
-			chat = json.load(file)
-		
-		with open(docs_path, "r") as file:    
-			uploaded_documents = json.load(file)
-		
-		modified_inputs = {
-			"chat": chat,
-			"documents": uploaded_documents,
-		}
+		# Validate inputs
+		if not isinstance(inputs.get('documents'), list):
+			raise ValueError("'documents' must be a list of URLs")
+		if not isinstance(inputs.get('chat'), list):
+			raise ValueError("'chat' must be a list of chat messages")
 
-		return modified_inputs
+		# Return validated inputs directly
+		return inputs
 	
 	@agent
 	def info_extractor(self) -> Agent:
@@ -104,4 +101,5 @@ class ProblemFinder():
 			tasks=self.tasks,
 			process=Process.sequential,
 			verbose=False,
+			memory=False
 		)
