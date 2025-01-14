@@ -3,6 +3,7 @@ import warnings
 import uvicorn 
 from typing import List, Dict, Any, Optional
 from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from uuid import uuid4
 from enum import StrEnum
@@ -32,11 +33,7 @@ class CrewItem(BaseModel):
 class ResponseData(BaseModel):
     status: Status
     output: Optional[List[str]] = None
-    error: Optional[str] = None
-
-    class Config:
-        exclude_defaults = True
-        extra = "forbid"
+    error: Optional[str] = None    
 
 store: Dict[str, CrewItem] = {}
 app = FastAPI()
@@ -79,7 +76,7 @@ async def get_status(job_id: str):
         elif job.status == Status.FINISHED:
             response.output = job.output
 
-        return response
+        return jsonable_encoder(response, exclude_none=True)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
