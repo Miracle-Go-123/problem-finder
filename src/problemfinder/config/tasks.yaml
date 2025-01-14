@@ -80,9 +80,9 @@ chat_problem_finder_task:
   expected_output: >
     An array of strings with the following example structure:
     [
-        "Inconsistency 1",
-        "Inconsistency 2",
-        "Inconsistency 3"
+        "This is inconsistency 1",
+        "This is inconsistency 2",
+        "This is inconsistency 3"
     ]
   agent: chat_problem_finder
 
@@ -120,9 +120,9 @@ comparator_task:
   expected_output: >
     An array of strings with the following example structure:
     [
-        "Inconsistency 1",
-        "Inconsistency 2",
-        "Inconsistency 3"
+        "The last name is blah blah, but in the document, ...",
+        "....",
+        "...."
     ]
   agent: comparator
 
@@ -147,11 +147,11 @@ reviewer_task:
     - Preserve important context while being concise
   context: [comparator_task, chat_problem_finder_task]
   expected_output: >
-    An array of strings with the following example structure:
+    A Json array of strings with the following example structure:
     [
         "Date of Birth Discrepancy: Provided date of birth is 02/05/2000, but the Permanent Resident Card shows 01/01/1920.",
-        "Inconsistency 2: blah blah",
-        "Inconsistency 3: blah blah"
+        "....",
+        "...."
     ]
   agent: reviewer
   output_file: "report.txt"

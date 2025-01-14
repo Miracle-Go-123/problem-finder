@@ -100,7 +100,7 @@ class ProblemFinder():
 	@task
 	def reviewer_task(self) -> Task:
 		config=self.tasks_config['reviewer_task']
-		config['expected_output'] = "list"
+		config['expected_output'] = "json_string_array"
 		return Task(
 			config=config,
 		)

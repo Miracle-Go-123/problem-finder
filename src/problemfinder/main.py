@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import warnings
 import uvicorn 
+import json
 from typing import List, Dict, Any, Optional
 from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.encoders import jsonable_encoder
@@ -36,7 +37,7 @@ class ResponseData(BaseModel):
     error: Optional[str] = None    
 
 store: Dict[str, CrewItem] = {}
-app = FastAPI()
+app = FastAPI(title="ProblemFinder API")
 
 def run_kickoff(input_data: ProblemFinderInput, job_id: str):
     try:
@@ -44,7 +45,7 @@ def run_kickoff(input_data: ProblemFinderInput, job_id: str):
         output = problemFinder.crew().kickoff(input_data.dict())
         
         store[job_id].status = Status.FINISHED
-        store[job_id].output = output.raw
+        store[job_id].output = json.loads(output.raw)
     except Exception as e:
         store[job_id].status = Status.FAILED
         store[job_id].error = str(e)
@@ -82,4 +83,4 @@ async def get_status(job_id: str):
     
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
