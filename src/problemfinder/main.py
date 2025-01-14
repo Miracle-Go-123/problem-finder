@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-import sys
 import warnings
-import json
-from pathlib import Path
-from typing import List, Dict, Any
-
+import uvicorn 
+from typing import List, Dict, Any, Optional
+from fastapi import FastAPI, HTTPException, BackgroundTasks
+from pydantic import BaseModel
+from uuid import uuid4
+from enum import StrEnum
 from problemfinder.crew import ProblemFinder
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
@@ -14,41 +15,74 @@ warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 # Replace with inputs you want to test with, it will automatically
 # interpolate any tasks and agents information
 
-def load_input_data() -> Dict[str, Any]:
-    """Load document URLs and chat history from JSON files"""
-    assets_path = Path("assets")
-    
-    with open(assets_path / "document.json", "r") as f:
-        documents = json.load(f)
-        
-    with open(assets_path / "chat.json", "r") as f:
-        chat = json.load(f)
-        
-    return {
-        "documents": documents,
-        "chat": chat
-    }
+class Status(StrEnum):
+    RUNNING = "running"
+    FINISHED = "finished"
+    FAILED = "failed"
+class ProblemFinderInput(BaseModel):
+    documents: List[str]
+    chat: List[Dict[str, Any]]
 
-def run() -> List[str]:
-    """
-    Run the ProblemFinder crew to analyze documents and chat history
-    Returns a list of identified problems/issues
-    """
-    # Initialize input data
-    input_data = load_input_data()
-    
-    # Create and run the crew
-    crew = ProblemFinder()
-    crew.crew().kickoff(inputs=input_data)
-    
-    
+class CrewItem(BaseModel):
+    status: Status
+    input: ProblemFinderInput
+    output: List[str] = []
+    error: Optional[str] = None
 
-def main():
+class ResponseData(BaseModel):
+    status: Status
+    output: Optional[List[str]] = None
+    error: Optional[str] = None
+
+    class Config:
+        exclude_defaults = True
+        extra = "forbid"
+
+store: Dict[str, CrewItem] = {}
+app = FastAPI()
+
+def run_kickoff(input_data: ProblemFinderInput, job_id: str):
     try:
-        run()
+        problemFinder = ProblemFinder()
+        output = problemFinder.crew().kickoff(input_data.dict())
+        
+        store[job_id].status = Status.FINISHED
+        store[job_id].output = output.raw
     except Exception as e:
-        print(f"Error running ProblemFinder: {str(e)}")
-        raise
+        store[job_id].status = Status.FAILED
+        store[job_id].error = str(e)
+
+@app.post("/kickoff")
+async def kickoff(input_data: ProblemFinderInput, background_tasks: BackgroundTasks):
+    try:
+        job_id = str(uuid4())
+        background_tasks.add_task(run_kickoff, input_data, job_id)
+        store[job_id] = CrewItem(status=Status.RUNNING, input=input_data)
+        
+        return {
+            "job_id": job_id
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+@app.get("/status/{job_id}")
+async def get_status(job_id: str):
+    try:
+        if job_id not in store:
+            raise HTTPException(status_code=404, detail=f"Job {job_id} not found")
+        
+        job = store[job_id]
+        
+        response = ResponseData(status=job.status)
+        if job.status == Status.FAILED:
+            response.error = job.error
+        elif job.status == Status.FINISHED:
+            response.output = job.output
+
+        return response
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
 
 if __name__ == "__main__":
-    main()
+    uvicorn.run(app, host="0.0.0.0", port=8000)
