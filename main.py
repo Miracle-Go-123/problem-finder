@@ -9,6 +9,10 @@ from pydantic import BaseModel
 from uuid import uuid4
 from enum import StrEnum
 from crew import ProblemFinder
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
@@ -83,4 +87,4 @@ async def get_status(job_id: str):
     
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=int(os.getenv("PORT", "10000")), reload=True)
