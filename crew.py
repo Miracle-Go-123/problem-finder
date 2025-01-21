@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import List, Dict, Any
 
-from problemfinder.tools.customized_vision_tool import CustomizedVisionTool
+from tools.customized_vision_tool import CustomizedVisionTool
 from dotenv import load_dotenv
 import os
 

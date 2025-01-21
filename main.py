@@ -8,7 +8,7 @@ from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from uuid import uuid4
 from enum import StrEnum
-from problemfinder.crew import ProblemFinder
+from crew import ProblemFinder
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
