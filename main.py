@@ -78,8 +78,10 @@ async def get_status(job_id: str):
         response = ResponseData(status=job.status)
         if job.status == Status.FAILED:
             response.error = job.error
+            del store[job_id]  # Remove failed jobs
         elif job.status == Status.FINISHED:
             response.output = job.output
+            del store[job_id]  # Remove completed jobs
 
         return jsonable_encoder(response, exclude_none=True)
     except Exception as e:

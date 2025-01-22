@@ -154,4 +154,3 @@ reviewer_task:
         "...."
     ]
   agent: reviewer
-  output_file: "report.txt"
