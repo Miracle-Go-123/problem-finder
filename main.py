@@ -3,7 +3,7 @@ import warnings
 import uvicorn 
 import json
 from typing import List, Dict, Any, Optional
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException, BackgroundTasks, APIRouter, Depends
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
 from uuid import uuid4
@@ -11,6 +11,7 @@ from enum import StrEnum
 from crew import ProblemFinder
 from dotenv import load_dotenv
 import os
+import auth
 
 load_dotenv()
 
@@ -41,7 +42,8 @@ class ResponseData(BaseModel):
     error: Optional[str] = None    
 
 store: Dict[str, CrewItem] = {}
-app = FastAPI(title="ProblemFinder API")
+
+router = APIRouter(dependencies=[Depends(auth.validate_api_key)])
 
 def run_kickoff(input_data: ProblemFinderInput, job_id: str):
     try:
@@ -54,7 +56,7 @@ def run_kickoff(input_data: ProblemFinderInput, job_id: str):
         store[job_id].status = Status.FAILED
         store[job_id].error = str(e)
 
-@app.post("/kickoff")
+@router.post("/kickoff")
 async def kickoff(input_data: ProblemFinderInput, background_tasks: BackgroundTasks):
     try:
         job_id = str(uuid4())
@@ -67,7 +69,7 @@ async def kickoff(input_data: ProblemFinderInput, background_tasks: BackgroundTa
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-@app.get("/status/{job_id}")
+@router.get("/status/{job_id}")
 async def get_status(job_id: str):
     try:
         if job_id not in store:
@@ -87,6 +89,8 @@ async def get_status(job_id: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
+app = FastAPI(title="ProblemFinder API")
+app.include_router(router=router, prefix="")
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=int(os.getenv("PORT", "10000")), reload=True)
