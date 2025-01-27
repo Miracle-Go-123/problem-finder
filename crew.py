@@ -33,12 +33,15 @@ class ProblemFinder():
 		Expected inputs:
 		- documents: List[str] - List of document URLs
 		- chat: List[Dict] - Chat history in JSON format
+		- check_list: str - Rules provided by lawfirm
 		"""
 		# Validate inputs
 		if not isinstance(inputs.get('documents'), list):
 			raise ValueError("'documents' must be a list of URLs")
 		if not isinstance(inputs.get('chat'), list):
 			raise ValueError("'chat' must be a list of chat messages")
+		if not isinstance(inputs.get('check_list'), str):
+			raise ValueError("'Check list' must be a string")
 
 		# Return validated inputs directly
 		return inputs

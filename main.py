@@ -29,6 +29,7 @@ class Status(StrEnum):
 class ProblemFinderInput(BaseModel):
     documents: List[str]
     chat: List[Dict[str, Any]]
+    check_list: str
 
 class CrewItem(BaseModel):
     status: Status

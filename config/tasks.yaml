@@ -88,7 +88,8 @@ chat_problem_finder_task:
 
 comparator_task:
   description: >
-    Compare information from {chat} between the client and the legal assistant against extracted document information and identify all discrepancies. 
+    Compare information from {chat} between the client and the legal assistant against extracted document information and 
+    identify all discrepancies based on the rules outlined in {check_list} 
 
     Follow these steps:
     1. PREPARE COMPARISON FRAMEWORK
