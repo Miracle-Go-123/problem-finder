@@ -1,13 +1,20 @@
-from fastapi import HTTPException, Security
-from fastapi.security import api_key
+from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.requests import Request
+from starlette.responses import Response
 from dotenv import load_dotenv
 import os
 
 load_dotenv()
 
-api_key_header = api_key.APIKeyHeader(name="X_API_KEY")
+API_KEY_NAME = "X_API_KEY"
+API_KEY = os.getenv("NEXT_API_KEY")
 
-async def validate_api_key(key: str = Security(api_key_header)):
-    if key != os.getenv("NEXT_API_KEY"):
-        raise HTTPException(status_code=401, detail="Unauthorized Call")
-    
+class APIKeyMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        excluded_paths = ["/"]
+        if request.url.path not in excluded_paths:
+            api_key = request.headers.get(API_KEY_NAME)
+            if api_key != API_KEY:
+                return Response("Unauthorized Call", status_code=401)
+        return await call_next(request)
+
